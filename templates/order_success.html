@@ -1,0 +1,66 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Order Placed - ShopKart - Online Store</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <h2>🛒 ShopKart - Online Store</h2>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="{% url 'my_orders' %}">My Orders</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div class="order-success">
+
+            <h1>🎉 Order Placed Successfully!</h1>
+
+            <p>Thank you for shopping with ShopKart - Online Store.</p>
+
+            <hr>
+
+            <h2>Order #{{ order.id }}</h2>
+
+            <p>
+                <strong>Total Amount:</strong>
+                ₹{{ order.total_price }}
+            </p>
+
+            <p>
+                <strong>Payment Method:</strong>
+                {{ order.get_payment_method_display }}
+            </p>
+
+            <p>
+                <strong>Order Status:</strong>
+                {{ order.status }}
+            </p>
+
+            <br>
+
+            <a href="{% url 'my_orders' %}" class="btn">
+                📦 View My Orders
+            </a>
+
+            <a href="/" class="btn">
+                🛍️ Continue Shopping
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

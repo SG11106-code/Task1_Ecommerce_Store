@@ -1,0 +1,248 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ShopKart - Online Store</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <nav class="shop-navbar">
+        <div class="shop-logo">
+            🛒<span> ShopKart - Online Store</span>
+        </div>
+
+        <div class="nav-search">
+
+            <form method="GET" action="/">
+
+                <input type="text" name="q" placeholder="Search for products..." value="{{ query }}">
+
+                <button type="submit">🔍</button>
+
+            </form>
+
+        </div>
+
+        <div class="nav-actions">
+
+            {% if user.is_authenticated %}
+
+            <a href="{% url 'my_orders' %}">
+                📦 Orders
+            </a>
+
+            <a href="{% url 'wishlist' %}">
+                ❤️ Wishlist ({{ wishlist_count }})
+            </a>
+
+            <a href="{% url 'logout' %}">
+                Logout
+            </a>
+
+            {% else %}
+
+            <a href="{% url 'login' %}">
+                Login
+            </a>
+
+            <a href="{% url 'register' %}">
+                Register
+            </a>
+
+            {% endif %}
+
+            <a href="{% url 'cart' %}" class="cart-link">
+                🛒 Cart ({{ cart_count }})
+            </a>
+
+        </div>
+
+    </nav>
+    <div class="category-menu">
+
+        <a href="/">🏠 All</a>
+        <a href="/?category=Electronics">💻 Electronics</a>
+        <a href="/?category=Mobiles">📱 Mobiles</a>
+        <a href="/?category=Fashion">👕 Fashion</a>
+        <a href="/?category=Home">🏠 Home</a>
+        <a href="/?category=Gaming">🎮 Gaming</a>
+        <a href="/?category=Books">📚 Books</a>
+
+    </div>
+    <div class="sort-menu">
+        <span>Sort by:</span>
+
+        <a href="?category={{ category }}&q={{ query }}&sort=low">
+            Price: Low to High
+        </a>
+
+        <a href="?category={{ category }}&q={{ query }}&sort=high">
+            Price: High to Low
+        </a>
+
+        <a href="/">
+            Clear
+        </a>
+    </div>
+    <div class="hero-banner">
+
+        <div class="hero-content">
+            <h1>Big Deals Are Here! 🔥</h1>
+            <p>Shop the latest products at amazing prices.</p>
+            <a href="#products" class="hero-btn">Shop Now</a>
+        </div>
+
+    </div>
+    <div class="search-box">
+
+        <form method="GET" action="/">
+            <input type="text" name="q" placeholder="Search products..." value="{{ query }}">
+
+            <button type="submit">
+                🔍 Search
+            </button>
+        </form>
+
+    </div>
+
+    <div class="container">
+
+        <h1>Our Products</h1>
+
+        <div class="products" id="products">
+
+            {% for product in products %}
+
+            <div class="product-card">
+
+                {% if product.image %}
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                <div class="product-image placeholder">
+                    🛍️
+                </div>
+                {% endif %}
+
+                <div class="product-info">
+
+                    <h3>{{ product.name }}</h3>
+
+                    <p class="description">
+                        {{ product.description }}
+                    </p>
+
+                    <div class="price-box">
+
+                        <span class="current-price">
+                            ₹{{ product.price }}
+                        </span>
+
+                        {% if product.original_price %}
+                        <span class="original-price">
+                            ₹{{ product.original_price }}
+                        </span>
+
+                        <span class="discount">
+                            {% widthratio product.price product.original_price 100 %}% OFF
+                        </span>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="rating">
+                        ⭐ {{ product.rating }} / 5
+                    </div>
+
+                    {% if product.stock > 0 %}
+                    <p class="stock">In Stock</p>
+                    {% else %}
+                    <p class="out-stock">Out of Stock</p>
+                    {% endif %}
+
+                    <div class="product-buttons">
+                        <a href="{% url 'product_detail' product.id %}" class="btn">
+                            View Details
+                        </a>
+
+                        {% if product.stock > 0 %}
+                        <a href="{% url 'add_to_cart' product.id %}" class="btn cart-btn">
+                            🛒 Add to Cart
+                        </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="product-card">
+                <h2>No products found.</h2>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <footer class="site-footer">
+
+        <div class="footer-container">
+
+            <!-- Store Info -->
+            <div class="footer-section">
+                <h2>🛒 ShopKart - Online Store</h2>
+                <p>
+                    Your simple and trusted online shopping destination.
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+
+                <a href="/">Home</a>
+                <a href="{% url 'cart' %}">🛒 Cart</a>
+                <a href="{% url 'wishlist' %}">❤️ Wishlist</a>
+                <a href="{% url 'my_orders' %}">📦 My Orders</a>
+            </div>
+
+            <!-- Account -->
+            <div class="footer-section">
+                <h3>Account</h3>
+
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            </div>
+
+            <!-- Contact -->
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+
+                <p>📧 support@mystore.com</p>
+                <p>📞 +91 98765 43210</p>
+            </div>
+
+            <div class="footer-section map-section">
+                <h3>📍 Find Us</h3>
+
+                <iframe src="https://www.google.com/maps?q=Greater%20Noida%20Uttar%20Pradesh&output=embed" width="300%"
+                    height="200" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 ShopKart - Online Store | All Rights Reserved</p>
+        </div>
+
+    </footer>
+</body>
+
+</html>

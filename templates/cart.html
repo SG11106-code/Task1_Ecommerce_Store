@@ -1,0 +1,191 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <h2>🛒 ShopKart - Online Store</h2>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="{% url 'cart' %}">Cart</a>
+
+            {% if user.is_authenticated %}
+            <a href="{% url 'my_orders' %}">My Orders</a>
+            <span>Hi, {{ user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1>Shopping Cart</h1>
+
+        {% if products %}
+
+        <div class="cart-layout">
+
+            <div class="cart-items">
+
+                {% for item in products %}
+
+                <div class="cart-item">
+
+                    <div class="cart-item-image">
+
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+                        {% else %}
+                        🛍️
+                        {% endif %}
+
+                    </div>
+
+                    <div class="cart-item-info">
+
+                        <h2>{{ item.product.name }}</h2>
+
+                        <p>
+                            {{ item.product.description }}
+                        </p>
+
+                        <p class="cart-price">
+                            ₹{{ item.product.price }}
+                        </p>
+
+                        <form method="POST" action="{% url 'update_cart' item.product.id %}" class="quantity-form">
+                            {% csrf_token %}
+
+                            <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" class="qty-btn">
+                                −
+                            </button>
+
+                            <span class="quantity">
+                                {{ item.quantity }}
+                            </span>
+
+                            <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" class="qty-btn">
+                                +
+                            </button>
+                        </form>
+
+                        <p>
+                            <strong>
+                                Item Total: ₹{{ item.item_total }}
+                            </strong>
+                        </p>
+
+                        <a href="{% url 'remove_from_cart' item.product.id %}" class="remove-btn">
+                            Remove
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div class="cart-summary">
+
+                <h2>Order Summary</h2>
+
+                <div class="summary-row">
+                    <span>Total Items</span>
+                    <span>{{ products|length }}</span>
+                </div>
+
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span>₹{{ total }}</span>
+                </div>
+
+                {% if user.is_authenticated %}
+
+                <a href="{% url 'checkout' %}" class="checkout-btn">
+                    Proceed to Checkout
+                </a>
+
+                {% else %}
+
+                <a href="{% url 'login' %}" class="checkout-btn">
+                    Login to Checkout
+                </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-cart">
+
+            <h2>🛒 Your cart is empty</h2>
+
+            <p>Add some products to your cart.</p>
+
+            <a href="/" class="btn">
+                Start Shopping
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <footer class="site-footer">
+    
+        <div class="footer-container">
+    
+            <div class="footer-section">
+                <h2>🛒 ShopKart - Online Store</h2>
+                <p>Your simple and trusted online shopping destination.</p>
+            </div>
+    
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="/">Home</a>
+                <a href="{% url 'cart' %}">🛒 Cart</a>
+                <a href="{% url 'wishlist' %}">❤️ Wishlist</a>
+                <a href="{% url 'my_orders' %}">📦 My Orders</a>
+            </div>
+    
+            <div class="footer-section">
+                <h3>Account</h3>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            </div>
+    
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>📧 support@mystore.com</p>
+                <p>📞 +91 98765 43210</p>
+            </div>
+    
+        </div>
+    
+        <div class="footer-bottom">
+            <p>© 2026 ShopKart - Online Store | All Rights Reserved</p>
+        </div>
+    
+    </footer>
+
+</body>
+
+</html>

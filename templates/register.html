@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - ShopKart - Online Store</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <h2>🛒 ShopKart - Online Store</h2>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="{% url 'login' %}">Login</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <h1>Create Account</h1>
+
+    <div class="product-card">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit" class="btn">
+                Register
+            </button>
+        </form>
+
+        <p>
+            Already have an account?
+            <a href="{% url 'login' %}">Login</a>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

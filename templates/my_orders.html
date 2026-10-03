@@ -1,0 +1,296 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Orders - ShopKart - Online Store</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <h2>🛒 ShopKart - Online Store</h2>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="{% url 'cart' %}">Cart</a>
+            <a href="{% url 'my_orders' %}">My Orders</a>
+            <span>Hi, {{ user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+
+    </nav>
+
+
+    <div class="container">
+
+        <h1>My Orders</h1>
+        {% if orders %}
+        
+        <form method="POST" action="{% url 'clear_order_history' %}"
+            onsubmit="return confirm('Are you sure you want to clear your complete order history?');">
+        
+            {% csrf_token %}
+        
+            <button type="submit" class="clear-orders-btn">
+                🗑️ Clear Order History
+            </button>
+        
+        </form>
+        
+        {% endif %}
+
+        {% if orders %}
+
+        <div class="orders-list">
+
+            {% for order in orders %}
+
+            <div class="order-card">
+
+                <div class="order-header">
+
+                    <div>
+                        <h2>Order #{{ order.id }}</h2>
+
+                        <p>
+                            {{ order.created_at|date:"d M Y, h:i A" }}
+                        </p>
+                    </div>
+
+                    <div>
+
+                        <span class="order-status">
+                            {{ order.status }}
+                        </span>
+                        <div class="tracking">
+
+                            <div class="track-step active">
+                                <span>✓</span>
+                                <p>Order Placed</p>
+                            </div>
+
+                            <div class="track-line
+                                {% if order.status == 'Confirmed' or order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}">
+                            </div>
+
+                            <div class="track-step
+                                {% if order.status == 'Confirmed' or order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}">
+                                <span>✓</span>
+                                <p>Confirmed</p>
+                            </div>
+
+                            <div class="track-line
+                                {% if order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}">
+                            </div>
+
+                            <div class="track-step
+                                {% if order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}">
+                                <span>🚚</span>
+                                <p>Shipped</p>
+                            </div>
+
+                            <div class="track-line
+                                {% if order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}">
+                            </div>
+
+                            <div class="track-step
+                                {% if order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}">
+                                <span>🏠</span>
+                                <p>Out for Delivery</p>
+                            </div>
+
+                            <div class="track-line
+                                {% if order.status == 'Delivered' %}
+                                    active
+                                {% endif %}">
+                            </div>
+
+                            <div class="track-step
+                                {% if order.status == 'Delivered' %}
+                                    active
+                                {% endif %}">
+                                <span>✓</span>
+                                <p>Delivered</p>
+                            </div>
+
+                        </div>
+
+                        {% if order.status == "Pending" %}
+                        <br><br>
+
+                        <a href="{% url 'cancel_order' order.id %}" class="cancel-btn"
+                            onclick="return confirm('Are you sure you want to cancel this order?');">
+                            ❌ Cancel Order
+                        </a>
+                        {% endif %}
+
+                    </div>
+                    <div class="tracking">
+
+                        <div class="track-step {% if order.status != 'Cancelled' %}active{% endif %}">
+                            <span>✓</span>
+                            <p>Order Placed</p>
+                        </div>
+
+                        <div class="track-line"></div>
+
+                        <div
+                            class="track-step {% if order.status == 'Confirmed' or order.status == 'Shipped' or order.status == 'Delivered' %}active{% endif %}">
+                            <span>✓</span>
+                            <p>Confirmed</p>
+                        </div>
+
+                        <div class="track-line"></div>
+
+                        <div
+                            class="track-step {% if order.status == 'Shipped' or order.status == 'Delivered' %}active{% endif %}">
+                            <span>🚚</span>
+                            <p>Shipped</p>
+                        </div>
+
+                        <div class="track-line"></div>
+
+                        <div class="track-step {% if order.status == 'Delivered' %}active{% endif %}">
+                            <span>✓</span>
+                            <p>Delivered</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="order-products">
+
+                    {% for item in order.orderitem_set.all %}
+
+                    <div class="order-product">
+
+                        {% if item.product.image %}
+
+                        <img src="{{ item.product.image }}" alt="{{ item.product.name }}">
+
+                        {% else %}
+
+                        <div class="order-placeholder">
+                            🛍️
+                        </div>
+
+                        {% endif %}
+
+
+                        <div>
+
+                            <h3>
+                                {{ item.product.name }}
+                            </h3>
+
+                            <p>
+                                Quantity: {{ item.quantity }}
+                            </p>
+
+                            <p>
+                                Price: ₹{{ item.price }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="order-footer">
+
+                    <strong>
+                        Total: ₹{{ order.total_price }}
+                    </strong>
+                    <p>
+                        💳 <strong>Payment:</strong>
+                        {{ order.get_payment_method_display }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-orders">
+
+            <h2>📦 No orders yet</h2>
+
+            <p>
+                You haven't placed any orders.
+            </p>
+
+            <a href="/" class="btn">
+                Start Shopping
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <footer class="site-footer">
+
+        <div class="footer-container">
+
+            <div class="footer-section">
+                <h2>🛒 ShopKart - Online Store</h2>
+                <p>Your simple and trusted online shopping destination.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="/">Home</a>
+                <a href="{% url 'cart' %}">🛒 Cart</a>
+                <a href="{% url 'wishlist' %}">❤️ Wishlist</a>
+                <a href="{% url 'my_orders' %}">📦 My Orders</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Account</h3>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>📧 support@mystore.com</p>
+                <p>📞 +91 98765 43210</p>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 ShopKart - Online Store | All Rights Reserved</p>
+        </div>
+
+    </footer>
+</body>
+
+</html>
